@@ -7,16 +7,22 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Set the script name and path
-SCRIPT_NAME="reconnect_mouse"
+SCRIPT_NAME="listen_unlock"
 SCRIPT_PATH="$(pwd)/$SCRIPT_NAME.sh"
 
 # Set the systemd service file path
-SERVICE_FILE="/etc/systemd/system/$SCRIPT_NAME.service"
+SERVICE_FILE="/etc/systemd/system/reconnect_bluetooth_mouse.service"
+
+# Stop and disable the existing service if it exists
+if systemctl list-unit-files | grep -q "reconnect_bluetooth_mouse.service"; then
+  systemctl stop reconnect_bluetooth_mouse.service
+  systemctl disable reconnect_bluetooth_mouse.service
+fi
 
 # Create the systemd service file
 cat > "$SERVICE_FILE" <<EOL
 [Unit]
-Description=Reconnect Mouse Service
+Description=Reconnect Bluetooth Mouse Service
 After=bluetooth.target
 
 [Service]
@@ -35,11 +41,12 @@ chmod +x "$SCRIPT_PATH"
 systemctl daemon-reload
 
 # Enable the service to start on boot
-systemctl enable "$SCRIPT_NAME.service"
+systemctl enable reconnect_bluetooth_mouse.service
 
 # Start the service
-systemctl start "$SCRIPT_NAME.service"
+systemctl start reconnect_bluetooth_mouse.service
 
-echo "Installation complete. The $SCRIPT_NAME service has been installed and started."
+echo "Installation complete. The Reconnect Bluetooth Mouse service has been installed and started."
 
-systemctl status reconnect_mouse.service
+# Display the status of the service
+systemctl status reconnect_bluetooth_mouse.service
