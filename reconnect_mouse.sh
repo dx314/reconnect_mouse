@@ -35,15 +35,9 @@ function main() {
             sleep 5 # Give it some time to reconnect
         else
             echo "$DEVICE_NAME is now connected. Exiting script."
-	    return 0
+            return 0
         fi
     done
 }
 
-while read line
-do
-    case "$line" in
-        *"{'LockedHint': <false>}"*) main;;
-    esac
-done < <(gdbus monitor -y -d org.freedesktop.login1)
-
+main
